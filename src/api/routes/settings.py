@@ -87,6 +87,8 @@ class NotificationSettingsModel(BaseModel):
     WEBHOOK_QUERY_PARAMETERS: Optional[str] = None
     WEBHOOK_BODY: Optional[str] = None
     PCURL_TO_MOBILE: Optional[bool] = None
+    ONEBOT_QQ_HTTP_URL: Optional[str] = None
+    ONEBOT_QQ_GROUP_ID: Optional[str] = None
 
 
 class NotificationTestRequest(BaseModel):

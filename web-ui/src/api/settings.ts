@@ -16,6 +16,8 @@ export interface NotificationSettings {
   WEBHOOK_QUERY_PARAMETERS?: string
   WEBHOOK_BODY?: string
   PCURL_TO_MOBILE?: boolean
+  ONEBOT_QQ_HTTP_URL?: string
+  ONEBOT_QQ_GROUP_ID?: string
   BARK_URL_SET?: boolean
   GOTIFY_TOKEN_SET?: boolean
   WX_BOT_URL_SET?: boolean
@@ -41,6 +43,8 @@ export interface NotificationSettingsUpdate {
   WEBHOOK_QUERY_PARAMETERS?: string | null
   WEBHOOK_BODY?: string | null
   PCURL_TO_MOBILE?: boolean
+  ONEBOT_QQ_HTTP_URL?: string | null
+  ONEBOT_QQ_GROUP_ID?: string | null
 }
 
 export interface NotificationTestResponse {

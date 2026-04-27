@@ -27,6 +27,8 @@ NOTIFICATION_FIELD_MAP = {
     "WEBHOOK_QUERY_PARAMETERS": "webhook_query_parameters",
     "WEBHOOK_BODY": "webhook_body",
     "PCURL_TO_MOBILE": "pcurl_to_mobile",
+    "ONEBOT_QQ_HTTP_URL": "onebot_qq_http_url",
+    "ONEBOT_QQ_GROUP_ID": "onebot_qq_group_id",
 }
 
 CHANNEL_NOTIFICATION_FIELDS = {
@@ -47,6 +49,7 @@ CHANNEL_NOTIFICATION_FIELDS = {
         "WEBHOOK_QUERY_PARAMETERS",
         "WEBHOOK_BODY",
     },
+    "onebot_qq": {"ONEBOT_QQ_HTTP_URL", "ONEBOT_QQ_GROUP_ID"},
 }
 
 SECRET_NOTIFICATION_FIELDS = {
@@ -71,6 +74,7 @@ URL_FIELDS = {
     "WX_BOT_URL",
     "TELEGRAM_API_BASE_URL",
     "WEBHOOK_URL",
+    "ONEBOT_QQ_HTTP_URL",
 }
 
 ALLOWED_WEBHOOK_METHODS = {"GET", "POST"}
@@ -110,6 +114,8 @@ def build_notification_settings_response(
         "WEBHOOK_QUERY_PARAMETERS": notification_settings.webhook_query_parameters or "",
         "WEBHOOK_BODY": notification_settings.webhook_body or "",
         "PCURL_TO_MOBILE": notification_settings.pcurl_to_mobile,
+        "ONEBOT_QQ_HTTP_URL": notification_settings.onebot_qq_http_url or "",
+        "ONEBOT_QQ_GROUP_ID": notification_settings.onebot_qq_group_id or "",
     }
     for field in SECRET_NOTIFICATION_FIELDS:
         attr_name = NOTIFICATION_FIELD_MAP[field]
@@ -152,6 +158,8 @@ def build_configured_channels(
         channels.append("telegram")
     if notification_settings.webhook_url:
         channels.append("webhook")
+    if notification_settings.onebot_qq_http_url and notification_settings.onebot_qq_group_id:
+        channels.append("onebot_qq")
     return channels
 
 
@@ -270,6 +278,8 @@ def load_notification_settings() -> NotificationSettings:
             "webhook_query_parameters": _normalize_existing_text(env_manager.get_value("WEBHOOK_QUERY_PARAMETERS")),
             "webhook_body": _normalize_existing_text(env_manager.get_value("WEBHOOK_BODY")),
             "pcurl_to_mobile": _env_bool(env_manager.get_value("PCURL_TO_MOBILE"), True),
+            "onebot_qq_http_url": _normalize_existing_text(env_manager.get_value("ONEBOT_QQ_HTTP_URL")),
+            "onebot_qq_group_id": _normalize_existing_text(env_manager.get_value("ONEBOT_QQ_GROUP_ID")),
         }
     )
 
@@ -342,6 +352,12 @@ def _validate_notification_settings(settings: NotificationSettings) -> None:
         settings.telegram_bot_token,
         "TELEGRAM_CHAT_ID",
         settings.telegram_chat_id,
+    )
+    _validate_pair(
+        "ONEBOT_QQ_HTTP_URL",
+        settings.onebot_qq_http_url,
+        "ONEBOT_QQ_GROUP_ID",
+        settings.onebot_qq_group_id,
     )
 
     if settings.webhook_method not in ALLOWED_WEBHOOK_METHODS:

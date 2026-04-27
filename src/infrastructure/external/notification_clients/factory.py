@@ -6,6 +6,7 @@ from src.infrastructure.config.settings import NotificationSettings
 from .bark_client import BarkClient
 from .gotify_client import GotifyClient
 from .ntfy_client import NtfyClient
+from .onebot_qq_client import OneBotQQClient
 from .telegram_client import TelegramClient
 from .wecom_bot_client import WeComBotClient
 from .webhook_client import WebhookClient
@@ -35,6 +36,11 @@ def build_notification_clients(settings: NotificationSettings):
             webhook_content_type=settings.webhook_content_type,
             webhook_query_parameters=settings.webhook_query_parameters,
             webhook_body=settings.webhook_body,
+            pcurl_to_mobile=pcurl_to_mobile,
+        ),
+        OneBotQQClient(
+            settings.onebot_qq_http_url,
+            settings.onebot_qq_group_id,
             pcurl_to_mobile=pcurl_to_mobile,
         ),
     ]

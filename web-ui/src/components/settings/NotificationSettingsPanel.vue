@@ -12,7 +12,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import type { NotificationSettings, NotificationSettingsUpdate, NotificationTestResponse } from '@/api/settings'
 
-type ChannelKey = 'ntfy' | 'bark' | 'gotify' | 'wecom' | 'telegram' | 'webhook'
+type ChannelKey = 'ntfy' | 'bark' | 'gotify' | 'wecom' | 'telegram' | 'webhook' | 'onebot_qq'
 
 const props = defineProps<{
   settings: NotificationSettings
@@ -45,6 +45,7 @@ const channelFields: Record<ChannelKey, (keyof NotificationSettingsUpdate)[]> = 
   wecom: ['WX_BOT_URL'],
   telegram: ['TELEGRAM_BOT_TOKEN', 'TELEGRAM_CHAT_ID', 'TELEGRAM_API_BASE_URL'],
   webhook: ['WEBHOOK_URL', 'WEBHOOK_METHOD', 'WEBHOOK_CONTENT_TYPE', 'WEBHOOK_HEADERS', 'WEBHOOK_QUERY_PARAMETERS', 'WEBHOOK_BODY'],
+  onebot_qq: ['ONEBOT_QQ_HTTP_URL', 'ONEBOT_QQ_GROUP_ID'],
 }
 
 function syncFromSettings(settings: NotificationSettings) {
@@ -57,6 +58,8 @@ function syncFromSettings(settings: NotificationSettings) {
   initialValues.WEBHOOK_QUERY_PARAMETERS = settings.WEBHOOK_QUERY_PARAMETERS ?? ''
   initialValues.WEBHOOK_BODY = settings.WEBHOOK_BODY ?? ''
   initialValues.PCURL_TO_MOBILE = settings.PCURL_TO_MOBILE ?? true
+  initialValues.ONEBOT_QQ_HTTP_URL = settings.ONEBOT_QQ_HTTP_URL ?? ''
+  initialValues.ONEBOT_QQ_GROUP_ID = settings.ONEBOT_QQ_GROUP_ID ?? ''
 
   Object.assign(form, initialValues, {
     BARK_URL: '',
@@ -125,6 +128,7 @@ function buildScopedPayload(channel?: ChannelKey): NotificationSettingsUpdate {
   const textFields: (keyof NotificationSettingsUpdate)[] = [
     'NTFY_TOPIC_URL', 'GOTIFY_URL', 'TELEGRAM_CHAT_ID', 'TELEGRAM_API_BASE_URL', 'WEBHOOK_METHOD',
     'WEBHOOK_CONTENT_TYPE', 'WEBHOOK_QUERY_PARAMETERS', 'WEBHOOK_BODY',
+    'ONEBOT_QQ_HTTP_URL', 'ONEBOT_QQ_GROUP_ID',
   ]
 
   for (const field of textFields) {
@@ -301,7 +305,16 @@ function resolveChannelBadge(channel: ChannelKey) {
         <CardFooter class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><Badge :variant="isChannelConfigured('webhook') ? 'default' : 'outline'">{{ resolveChannelBadge('webhook') }}</Badge><div class="flex flex-wrap gap-2"><Button variant="ghost" size="sm" :disabled="props.isSaving" @click="clearChannel('webhook')"><Trash2 class="h-4 w-4" />{{ t('notifyPanel.clear') }}</Button><Button variant="outline" size="sm" :disabled="props.isSaving" @click="handleTest('webhook')"><TestTube2 class="h-4 w-4" />{{ t('notifyPanel.test') }}</Button></div></CardFooter>
       </Card>
 
-      <div v-for="channel in ['ntfy', 'bark', 'gotify', 'wecom', 'telegram', 'webhook']" :key="channel">
+      <Card class="app-surface-subtle overflow-hidden border-l-4 border-l-blue-500">
+        <CardHeader><CardTitle class="flex items-center gap-2">QQ群推送 (OneBot V11)</CardTitle><CardDescription>通过 OneBot V11 协议向 QQ 群发送商品推荐通知</CardDescription></CardHeader>
+        <CardContent class="grid gap-4 md:grid-cols-2">
+          <div class="grid gap-2"><Label>HTTP API 地址</Label><Input :model-value="form.ONEBOT_QQ_HTTP_URL ?? ''" placeholder="http://127.0.0.1:15300" @update:model-value="(value) => updateField('ONEBOT_QQ_HTTP_URL', String(value))" /></div>
+          <div class="grid gap-2"><Label>QQ 群号</Label><Input :model-value="form.ONEBOT_QQ_GROUP_ID ?? ''" placeholder="123456789" @update:model-value="(value) => updateField('ONEBOT_QQ_GROUP_ID', String(value))" /></div>
+        </CardContent>
+        <CardFooter class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><Badge :variant="isChannelConfigured('onebot_qq') ? 'default' : 'outline'">{{ resolveChannelBadge('onebot_qq') }}</Badge><div class="flex flex-wrap gap-2"><Button variant="ghost" size="sm" :disabled="props.isSaving" @click="clearChannel('onebot_qq')"><Trash2 class="h-4 w-4" />{{ t('notifyPanel.clear') }}</Button><Button variant="outline" size="sm" :disabled="props.isSaving" @click="handleTest('onebot_qq')"><TestTube2 class="h-4 w-4" />{{ t('notifyPanel.test') }}</Button></div></CardFooter>
+      </Card>
+
+      <div v-for="channel in ['ntfy', 'bark', 'gotify', 'wecom', 'telegram', 'webhook', 'onebot_qq']" :key="channel">
         <div v-if="testResults[channel]" class="rounded-2xl border px-4 py-3 text-sm" :class="resultClass(channel as ChannelKey)">
           {{ testResults[channel].label }}：{{ testResults[channel].message }}
         </div>

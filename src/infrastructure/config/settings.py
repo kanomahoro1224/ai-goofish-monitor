@@ -74,6 +74,8 @@ class NotificationSettings(_EnvSettings):
     webhook_query_parameters: Optional[str] = _env_field(None, "WEBHOOK_QUERY_PARAMETERS")
     webhook_body: Optional[str] = _env_field(None, "WEBHOOK_BODY")
     pcurl_to_mobile: bool = _env_field(True, "PCURL_TO_MOBILE")
+    onebot_qq_http_url: Optional[str] = _env_field(None, "ONEBOT_QQ_HTTP_URL")
+    onebot_qq_group_id: Optional[str] = _env_field(None, "ONEBOT_QQ_GROUP_ID")
 
     def has_any_notification_enabled(self) -> bool:
         """检查是否配置了任何通知服务"""
@@ -83,7 +85,8 @@ class NotificationSettings(_EnvSettings):
             self.gotify_url and self.gotify_token,
             self.bark_url,
             self.telegram_bot_token and self.telegram_chat_id,
-            self.webhook_url
+            self.webhook_url,
+            self.onebot_qq_http_url and self.onebot_qq_group_id,
         ])
 
 
