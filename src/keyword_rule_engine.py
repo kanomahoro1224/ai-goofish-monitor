@@ -36,12 +36,10 @@ def _collect_text_fragments(value: Any, bucket: List[str]) -> None:
 
 def build_search_text(record: Dict[str, Any]) -> str:
     fragments: List[str] = []
-    product_info = record.get("商品信息", {})
-    seller_info = record.get("卖家信息", {})
+    product_info = record.get("商品信息", {}) or {}
 
     _collect_text_fragments(product_info.get("商品标题"), fragments)
     _collect_text_fragments(product_info, fragments)
-    _collect_text_fragments(seller_info, fragments)
 
     return normalize_text(" ".join(fragments))
 

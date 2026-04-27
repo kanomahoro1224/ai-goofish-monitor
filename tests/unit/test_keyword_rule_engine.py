@@ -15,11 +15,13 @@ def _sample_record():
     }
 
 
-def test_build_search_text_contains_product_and_seller_fields():
+def test_build_search_text_only_includes_product_fields():
     text = build_search_text(_sample_record())
     assert "sony a7m4" in text
-    assert "摄影器材店" in text
-    assert "支持同城面交" in text
+    assert "验货宝" in text
+    # 卖家信息不应出现在搜索文本中
+    assert "摄影器材店" not in text
+    assert "支持同城面交" not in text
 
 
 def test_keyword_rules_or_match_any_keyword():
@@ -33,7 +35,7 @@ def test_keyword_rules_or_match_any_keyword():
 
 def test_keyword_rules_count_multiple_hits():
     text = build_search_text(_sample_record())
-    result = evaluate_keyword_rules(["a7m4", "验货宝", "摄影器材店"], text)
+    result = evaluate_keyword_rules(["a7m4", "验货宝", "包邮"], text)
     assert result["is_recommended"] is True
     assert result["keyword_hit_count"] == 3
 
@@ -94,9 +96,9 @@ def test_regex_keyword_alternation():
 
 def test_exclude_keyword_blocks_match():
     text = build_search_text(_sample_record())
-    result = evaluate_keyword_rules(["a7m4", "-摄影器材店"], text)
+    result = evaluate_keyword_rules(["a7m4", "-包邮"], text)
     assert result["is_recommended"] is False
-    assert "-摄影器材店" in result["excluded_by"]
+    assert "-包邮" in result["excluded_by"]
     assert result["matched_keywords"] == []
 
 
@@ -108,7 +110,7 @@ def test_exclude_keyword_without_positive_match():
 
 
 def test_exclude_regex():
-    result = evaluate_keyword_rules(["a7m4", "-/器材|验机/"], build_search_text(_sample_record()))
+    result = evaluate_keyword_rules(["a7m4", "-/包邮|面交/"], build_search_text(_sample_record()))
     assert result["is_recommended"] is False
     assert "excluded_by" in result
 
